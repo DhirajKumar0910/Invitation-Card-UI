@@ -6,5 +6,17 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'Invitation-Card-UI';
+  title = 'Invitation-Card';
+  logInTitle = 'Login';
+  userName = ""
+
+
+  ngOnInit(){
+      // 
+  }
+
+  login() {
+    this.userName = 'Dhiraj';
+    this.logInTitle = 'Welcome ' + this.userName;
+  }
 }

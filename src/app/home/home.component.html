@@ -1,0 +1,51 @@
+
+<div class="container">
+    <h1>Create Single Invitation</h1>
+    <form [formGroup]="createSingleInvForm">
+        <div class="form-group">
+            <label>Invitee Name</label>
+            <input type="text" class="form-control" formControlName="inviteeName" />
+            <p *ngIf="(createSingleInvForm.controls.inviteeName.dirty || createSingleInvForm.controls.inviteeName.touched) && createSingleInvForm.controls.inviteeName.errors" class="alert alert-danger">
+                This field is required!
+            </p>
+        </div>
+        <div class="form-group">
+            <label>Invitee City</label>
+            <input type="text" class="form-control" formControlName="inviteeCity" />
+            <p *ngIf="(createSingleInvForm.controls.inviteeCity.dirty || createSingleInvForm.controls.inviteeCity.touched) && createSingleInvForm.controls.inviteeCity.errors" class="alert alert-danger">
+                This field is required!
+            </p>
+        </div>
+        <div formArrayName="contentSet" *ngFor="let num of contentCountList; let i=index">
+            <div id="closeablecard" class="card card-hover-shadow mt-4">
+                <div class="card-header bg-transparent border-bottom-0">
+                    <button data-dismiss="alert" data-target="#closeablecard" type="button" class="close" aria-label="Close">
+                        <span (click)="decrContCount(i)" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="card-body mt-n5">
+                    <h5 class="card-title">Content To Be Added : {{ i+1 }}</h5>
+                    <div class="card-text">
+                        <div class="form-group">
+                            <fieldset [formGroupName]="i">
+                                <label>Page No</label>
+                                <input type="number" class="form-control" formControlName="pageNo" />
+
+                                <label>X Co-Ordinate</label>
+                                <input type="number" class="form-control" formControlName="xcoOrd" />
+
+                                <label>Y Co-Ordinate</label>
+                                <input type="number" class="form-control" formControlName="ycoOrd" />
+
+                                <label>Content To Be Printed</label>
+                                <input type="text" class="form-control" formControlName="content" />
+                                
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" (click)="addContCount()">Add Content</button>
+    </form>
+</div>
