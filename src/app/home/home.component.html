@@ -1,7 +1,11 @@
 
-<div class="container">
+<div class="container" id="foemContainer">
     <h1>Create Single Invitation</h1>
-    <form [formGroup]="createSingleInvForm">
+    <form [formGroup]="createSingleInvForm" (ngSubmit)="createSingleInvitation()">
+        <app-file-upload formControlName="file" [progress]="progress"></app-file-upload>
+        <p *ngIf="(createSingleInvForm.controls.file.dirty || createSingleInvForm.controls.file.touched) && createSingleInvForm.controls.file.errors" class="alert alert-danger">
+            This field is required!
+        </p>
         <div class="form-group">
             <label>Invitee Name</label>
             <input type="text" class="form-control" formControlName="inviteeName" />
@@ -16,7 +20,7 @@
                 This field is required!
             </p>
         </div>
-        <div formArrayName="contentSet" *ngFor="let num of contentCountList; let i=index">
+        <div formArrayName="contentSet" *ngFor="let item of getContentSet().controls; let i=index">
             <div id="closeablecard" class="card card-hover-shadow mt-4">
                 <div class="card-header bg-transparent border-bottom-0">
                     <button data-dismiss="alert" data-target="#closeablecard" type="button" class="close" aria-label="Close">
@@ -31,6 +35,9 @@
                                 <label>Page No</label>
                                 <input type="number" class="form-control" formControlName="pageNo" />
 
+                                <label>Font Size</label>
+                                <input type="number" class="form-control" formControlName="fontSize" />
+
                                 <label>X Co-Ordinate</label>
                                 <input type="number" class="form-control" formControlName="xcoOrd" />
 
@@ -38,8 +45,7 @@
                                 <input type="number" class="form-control" formControlName="ycoOrd" />
 
                                 <label>Content To Be Printed</label>
-                                <input type="text" class="form-control" formControlName="content" />
-                                
+                                <input type="text" class="form-control" formControlName="content" />                             
                             </fieldset>
                         </div>
                     </div>
@@ -47,5 +53,8 @@
             </div>
         </div>
         <button type="button" class="btn btn-primary" (click)="addContCount()">Add Content</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <div *ngIf="successMessage">Invitation Created Successfully with file name {{ createInvRes.fileName }}. {{ createInvRes.message }}</div>
+        <div *ngIf="errorMessage">Invitation Creation Failed. Error: {{ createInvRes.message }}</div>
     </form>
 </div>
