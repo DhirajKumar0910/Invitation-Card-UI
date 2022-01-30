@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  createSingleInvitationUrl: "http://localhost:2222/createSingleInvitation"
+  localUrl: "http://localhost:2222/"
 };
 
 /*

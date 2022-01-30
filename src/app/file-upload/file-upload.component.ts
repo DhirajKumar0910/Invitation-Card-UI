@@ -13,7 +13,6 @@ import { Inject } from '@angular/core';
   }]
 })
 export class FileUploadComponent implements ControlValueAccessor {
-  @Input() progress!: number;
   onChange!: Function;
   file: File | null = null;
 

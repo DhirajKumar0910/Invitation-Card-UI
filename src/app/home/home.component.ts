@@ -16,8 +16,11 @@ export class HomeComponent implements OnInit {
   file!: File
   createInvRes!: CreateInvResp;
   successMessage!: string | null;
-  errorMessage!: string | null;  
-  progress: number = 0;
+  errorMessage!: string | null; 
+  getFTErrMsg!: boolean;
+  fontDDEnabled!: boolean;
+  fontFileEnabled!: boolean; 
+  fontTypeList!: string[];
   constructor(private formBuilder: FormBuilder, private createInvServ: CreateinvitationService) { }
 
   ngOnInit(): void {
@@ -32,7 +35,10 @@ export class HomeComponent implements OnInit {
   createContentSet(): FormGroup {
     return this.formBuilder.group({
       pageNo: [0, [Validators.min(1), Validators.required]],
+      fontType: ["", fontTypeValidator()],
+      fontFile: [null, [Validators.required, requiredFileType('ttf')]],
       fontSize: [0, [Validators.min(2), Validators.max(72), Validators.required]],
+      fontColor: ['', [Validators.required, Validators.pattern("#([A-Fa-f0-9]{3}){1,2}")]],
       xcoOrd: [0, Validators.required],
       ycoOrd: [0, Validators.required],
       content: ['', Validators.required]
@@ -63,6 +69,23 @@ export class HomeComponent implements OnInit {
     )
   }
 
+  radioChange(event: any){
+    if(event.target.value==="DD"){
+      this.fontDDEnabled = true;
+      this.fontFileEnabled = !this.fontDDEnabled;
+      this.createInvServ.getFontTypes().subscribe(
+      (response)=>{
+        this.fontTypeList = response;
+      },
+      (errorResponse)=>{
+        this.getFTErrMsg = errorResponse.error.message;
+      });
+    } else if (event.target.value==="File") {
+      this.fontDDEnabled = false;
+      this.fontFileEnabled = !this.fontDDEnabled;
+    }
+  }
+
   decrContCount(i: number){
     this.contentSet = this.createSingleInvForm.get('contentSet') as FormArray;
     this.contentSet.removeAt(i);
@@ -78,6 +101,18 @@ export class HomeComponent implements OnInit {
     return this.contentSet;
   }
 
+}
+
+export function fontTypeValidator (){
+  return function (control: FormControl){
+    let fontType = control.value;
+    if(fontType === ""){
+      return {
+        fontValidator: true
+      };
+    }
+    return null;
+  };
 }
 
 export function requiredFileType( type: string ) {

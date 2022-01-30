@@ -18,6 +18,10 @@ export class CreateinvitationService {
     }));
     formData.append("file", file);
 
-    return this.http.post<CreateInvResp>(environment.createSingleInvitationUrl, formData);
+    return this.http.post<CreateInvResp>(environment.localUrl + "createSingleInvitation", formData);
+  }
+
+  getFontTypes(): Observable<string[]>{ 
+    return this.http.get<string[]>(environment.localUrl + "getFontTypes");
   }
 }
