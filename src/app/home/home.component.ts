@@ -12,15 +12,12 @@ import { CreateinvitationService } from './createinvitation.service';
 })
 export class HomeComponent implements OnInit {
   createSingleInvForm!: FormGroup;
-  contentSet!: FormArray;
   file!: File
   createInvRes!: CreateInvResp;
   successMessage!: string | null;
   errorMessage!: string | null; 
-  getFTErrMsg!: boolean;
-  fontDDEnabled!: boolean;
-  fontFileEnabled!: boolean; 
-  fontTypeList!: string[];
+  countArr: number[] = [0];
+
   constructor(private formBuilder: FormBuilder, private createInvServ: CreateinvitationService) { }
 
   ngOnInit(): void {
@@ -32,25 +29,13 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  createContentSet(): FormGroup {
-    return this.formBuilder.group({
-      pageNo: [0, [Validators.min(1), Validators.required]],
-      fontType: ["", fontTypeValidator()],
-      fontFile: [null, [Validators.required, requiredFileType('ttf')]],
-      fontSize: [0, [Validators.min(2), Validators.max(72), Validators.required]],
-      fontColor: ['', [Validators.required, Validators.pattern("#([A-Fa-f0-9]{3}){1,2}")]],
-      xcoOrd: [0, Validators.required],
-      ycoOrd: [0, Validators.required],
-      content: ['', Validators.required]
-    });
-  }
-
   createSingleInvitation(){
     const invitation = new InvitationDTO();
     invitation.inviteeName = this.createSingleInvForm.get('inviteeName')?.value;
     invitation.inviteeCity = this.createSingleInvForm.get('inviteeCity')?.value;
     invitation.contentList = this.createSingleInvForm.get('contentSet')?.value;
     this.file = this.createSingleInvForm.get('file')?.value.item(0);
+    console.log(invitation.contentList);
     this.createInvServ.createSingleInvitation(invitation, this.file).subscribe(
       (response)=>{
         this.createInvRes = response;
@@ -69,37 +54,10 @@ export class HomeComponent implements OnInit {
     )
   }
 
-  radioChange(event: any){
-    if(event.target.value==="DD"){
-      this.fontDDEnabled = true;
-      this.fontFileEnabled = !this.fontDDEnabled;
-      this.createInvServ.getFontTypes().subscribe(
-      (response)=>{
-        this.fontTypeList = response;
-      },
-      (errorResponse)=>{
-        this.getFTErrMsg = errorResponse.error.message;
-      });
-    } else if (event.target.value==="File") {
-      this.fontDDEnabled = false;
-      this.fontFileEnabled = !this.fontDDEnabled;
-    }
+  addCounter() {
+    this.countArr.push(0);
   }
 
-  decrContCount(i: number){
-    this.contentSet = this.createSingleInvForm.get('contentSet') as FormArray;
-    this.contentSet.removeAt(i);
-  }
-
-  addContCount(){
-    this.contentSet = this.createSingleInvForm.get('contentSet') as FormArray;
-    this.contentSet.push(this.createContentSet());
-  }
-
-  getContentSet(){
-    this.contentSet = this.createSingleInvForm.get('contentSet') as FormArray;
-    return this.contentSet;
-  }
 
 }
 
