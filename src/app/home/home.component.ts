@@ -1,10 +1,10 @@
-import { NONE_TYPE } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, FormControl, ValidatorFn, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ContentControl, ContentDTO, conToContentDTO } from '../model/content';
 import { CreateInvResp } from '../model/create-inv-resp';
 import { InvitationDTO } from '../model/invitation';
 import { CreateinvitationService } from './createinvitation.service';
+import { pdfDefaultOptions } from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'app-home',
@@ -18,8 +18,13 @@ export class HomeComponent implements OnInit {
   successMessage!: string | null;
   errorMessage!: string | null; 
   countArr: number[] = [0];
+  previewInvitation!: boolean;
+  viewPreviewButton!: boolean;
+  pdfBlob!: Blob;
 
-  constructor(private formBuilder: FormBuilder, private createInvServ: CreateinvitationService) { }
+  constructor(private formBuilder: FormBuilder, private createInvServ: CreateinvitationService) { 
+    pdfDefaultOptions.assetsFolder = 'bleeding-edge';
+  }
 
   ngOnInit(): void {
     this.createSingleInvForm = this.formBuilder.group({
@@ -53,22 +58,36 @@ export class HomeComponent implements OnInit {
         if(this.createInvRes.isSuccess){
           this.successMessage = this.createInvRes.message;
           this.errorMessage = null;
+          this.viewPreviewButton = true;
         } else {
           this.errorMessage = this.createInvRes.message;
           this.successMessage = null;
+          this.viewPreviewButton = false;
         }
       },
       (errorResponse)=>{
         this.errorMessage = errorResponse.error.message;
         this.successMessage = null;
+        this.viewPreviewButton = false;
       }
     )
+  }
+
+  previewInv(){
+    this.createInvServ.getGeneratedPDF(this.createInvRes.fileName).subscribe(
+      (response)=>{
+        this.pdfBlob = response;
+        this.previewInvitation = true;
+      },
+      (errorResponse)=>{
+        this.errorMessage = "PDF couldn't be fetched from Server" + errorResponse.error.message;
+      }
+    );
   }
 
   addCounter() {
     this.countArr.push(0);
   }
-
 
 }
 

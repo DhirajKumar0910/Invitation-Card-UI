@@ -22,7 +22,13 @@ export class CreateinvitationService {
     return this.http.post<CreateInvResp>(environment.localUrl + "createSingleInvitation", formData);
   }
 
+  getGeneratedPDF(fileName:string): Observable<Blob>{
+    return this.http.get(environment.localUrl+"getGeneratedPDF/"+fileName, {
+      responseType: 'blob'
+    });
+  }
+
   getFontTypes(): Observable<string[]>{ 
-    return this.http.get<string[]>(environment.localUrl + "getFontTypes");
+    return this.http.get<string[]>(environment.localUrl + "getFontTypes",);
   }
 }

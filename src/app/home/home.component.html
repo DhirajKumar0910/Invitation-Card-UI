@@ -28,7 +28,9 @@
         </div>
         <button type="button" class="btn btn-primary" (click)="countArr.push(0)">Add Content</button>
         <button type="submit" class="btn btn-primary" [disabled]="!createSingleInvForm.valid">Submit</button>
-        <div *ngIf="successMessage">{{ successMessage }}</div>
-        <div *ngIf="errorMessage">Invitation Creation Failed. Error: {{ errorMessage }}</div>
+        <button *ngIf="viewPreviewButton" type="button" class="btn btn-primary" (click)="previewInv()" >Preview</button>
+        <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger">Invitation Creation Failed. Error: {{ errorMessage }}</div>
+        <ngx-extended-pdf-viewer [src]="pdfBlob" [useBrowserLocale]="true"></ngx-extended-pdf-viewer>
     </form>
 </div>

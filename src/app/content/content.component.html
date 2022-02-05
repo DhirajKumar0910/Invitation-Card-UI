@@ -1,12 +1,13 @@
-<div id="closeablecard" class="card card-hover-shadow mt-4">
-    <div class="card-header bg-transparent border-bottom-0">
-        <button data-dismiss="alert" data-target="#closeablecard" type="button" class="close" aria-label="Close">
-            <span (click)="decrContCount()" aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="card-body mt-n5">
-        <h5 class="card-title">Content To Be Added : {{ contentIndex+1 }}</h5>
-        <div class="card-text">
+<div id="closeablecard" class="card mt-4">
+    <mat-card>
+        <mat-card-title>
+            <h5>Content To Be Added : {{ contentIndex+1 }}</h5>
+            <button mat-mini-fab (click)="decrContCount()">
+                <mat-icon aria-hidden="false">close</mat-icon>    
+            </button>
+        </mat-card-title>   
+         
+        <mat-card-content>
             <div class="form-group">
                 <form [formGroup]="contentForm">
                     <label>Page No</label>
@@ -48,6 +49,6 @@
                     <input type="text" class="form-control" formControlName="content" />                             
                 </form>
             </div>
-        </div>
-    </div>
+        </mat-card-content>
+    </mat-card>
 </div>
