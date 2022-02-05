@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, FormControl, AbstractControl } from '@angular/forms';
 import { CreateinvitationService } from '../home/createinvitation.service';
+import { requiredFileType } from '../home/home.component';
 
 @Component({
   selector: 'app-content',
@@ -24,8 +25,7 @@ export class ContentComponent implements OnInit {
   ngOnInit(): void {
     this.contentForm = this.formBuilder.group({
       pageNo: [0, [Validators.min(1), Validators.required]],
-      fontName: ["", Validators.required],
-      fontFile: [null],
+      fontRadio: [null, Validators.required],
       fontSize: [0, [Validators.min(2), Validators.max(72), Validators.required]],
       fontColor: ['', [Validators.required, Validators.pattern("#([A-Fa-f0-9]{3}){1,2}")]],
       xcoOrd: [0, Validators.required],
@@ -40,6 +40,10 @@ export class ContentComponent implements OnInit {
     if(event.target.value==="DD"){
       this.fontDDEnabled = true;
       this.fontFileEnabled = !this.fontDDEnabled;
+      this.contentForm.addControl('fontName', this.formBuilder.control('', Validators.required));
+      if(this.contentForm.contains('fontFile')){
+        this.contentForm.removeControl('fontFile');
+      }
       this.createInvServ.getFontTypes().subscribe(
       (response)=>{
         this.fontTypeList = response;
@@ -50,7 +54,19 @@ export class ContentComponent implements OnInit {
     } else if (event.target.value==="File") {
       this.fontDDEnabled = false;
       this.fontFileEnabled = !this.fontDDEnabled;
+      this.contentForm.addControl('fontFile', this.formBuilder.control(null, requiredFileType(['ttf','otf'])));
+      if(this.contentForm.contains('fontName')){
+        this.contentForm.removeControl('fontName');
+      }
     }
+  }
+
+  fontNameChange(){
+    this.contentForm.get('fontName')?.setValidators(Validators.required);
+  }
+
+  fontFileChange(){
+    this.contentForm.get('fontFile')?.setValidators(requiredFileType(['ttf','otf']));
   }
 
   decrContCount(){

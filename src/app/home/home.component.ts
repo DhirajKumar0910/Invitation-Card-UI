@@ -1,6 +1,7 @@
 import { NONE_TYPE } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, FormControl, ValidatorFn, AbstractControl } from '@angular/forms';
+import { ContentControl, ContentDTO, conToContentDTO } from '../model/content';
 import { CreateInvResp } from '../model/create-inv-resp';
 import { InvitationDTO } from '../model/invitation';
 import { CreateinvitationService } from './createinvitation.service';
@@ -22,7 +23,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.createSingleInvForm = this.formBuilder.group({
-      file: [null, [Validators.required, requiredFileType('pdf')]],
+      file: [null, [Validators.required, requiredFileType(['pdf'])]],
       inviteeName: ['', Validators.required],
       inviteeCity: ['', Validators.required],
       contentSet: this.formBuilder.array([])
@@ -30,13 +31,23 @@ export class HomeComponent implements OnInit {
   }
 
   createSingleInvitation(){
-    const invitation = new InvitationDTO();
+    let invitation = new InvitationDTO();
     invitation.inviteeName = this.createSingleInvForm.get('inviteeName')?.value;
     invitation.inviteeCity = this.createSingleInvForm.get('inviteeCity')?.value;
-    invitation.contentList = this.createSingleInvForm.get('contentSet')?.value;
+    let contentContList: ContentControl[] = this.createSingleInvForm.get('contentSet')?.value;
     this.file = this.createSingleInvForm.get('file')?.value.item(0);
-    console.log(invitation.contentList);
-    this.createInvServ.createSingleInvitation(invitation, this.file).subscribe(
+
+    let fontFileArray: File[] = [];
+    for(let contentCont of contentContList){
+      let contentDTO: ContentDTO = conToContentDTO(contentCont);
+      invitation.contentList.push(contentDTO);
+      if(contentCont.fontFile){
+        contentDTO.fontFileProv = true;
+        fontFileArray.push(contentCont.fontFile[0]);
+      }
+    }
+    
+    this.createInvServ.createSingleInvitation(invitation, this.file, fontFileArray).subscribe(
       (response)=>{
         this.createInvRes = response;
         if(this.createInvRes.isSuccess){
@@ -61,32 +72,25 @@ export class HomeComponent implements OnInit {
 
 }
 
-export function fontTypeValidator (){
-  return function (control: FormControl){
-    let fontType = control.value;
-    if(fontType === ""){
-      return {
-        fontValidator: true
-      };
-    }
-    return null;
-  };
-}
-
-export function requiredFileType( type: string ) {
-  return function (control: FormControl) {
+export function requiredFileType( type: string[] ): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
     const file = control.value;
     if ( file ) {
       let fileName: String = file.item(0).name;
       let array = fileName.split('.');
       const extension = array[array.length-1].toLowerCase();
-      if ( type.toLowerCase() !== extension.toLowerCase() ) {
-        return {
-          requiredFileType: true
-        };
+      let returnVal!: any;
+      for(let ext of type){
+        if(ext.toLowerCase() === extension.toLowerCase()){
+          returnVal = null;
+          break;
+        } else {
+          returnVal = {wrongExt: extension};
+        }
       }
-      return null;
+      return returnVal;
     }
-    return null;
-  };
+    return {wrongExt: ''}
+  }
+
 }

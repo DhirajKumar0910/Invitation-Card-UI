@@ -13,15 +13,15 @@
                     <input type="number" class="form-control" formControlName="pageNo" />
 
                     <label class="radio-inline">
-                        <input type="radio" value="DD" (change)="radioChange($event)" name="fontType"> Select Font From DropDown              
+                        <input type="radio" value="DD" (change)="radioChange($event)" formControlName="fontRadio"> Select Font From DropDown              
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" value="File" (change)="radioChange($event)" name="fontType"> Upload Font File
+                        <input type="radio" value="File" (change)="radioChange($event)" formControlName="fontRadio"> Upload Font File
                     </label><br>
 
                     <ng-template [ngIf]="fontDDEnabled">
                         <label for="fontName">Font Type</label>
-                        <select formControlName="fontName" class="form-control">
+                        <select formControlName="fontName" class="form-control" (change)="fontNameChange()">
                             <option value="">Select Website</option>
                             <option *ngFor="let fontType of fontTypeList" value="{{ fontType }}">{{ fontType }}</option>
                         </select>
@@ -29,7 +29,7 @@
 
                     <ng-template [ngIf]="fontFileEnabled">
                         <label for="fontFile">Choose Font File</label>
-                        <app-file-upload class="form-control" formControlName="fontFile"></app-file-upload>
+                        <app-file-upload class="form-control" formControlName="fontFile" (change)="fontFileChange()"></app-file-upload>
                     </ng-template>
                     
                     <label>Font Size</label>

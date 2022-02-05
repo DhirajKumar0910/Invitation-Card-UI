@@ -11,12 +11,13 @@ export class CreateinvitationService {
 
   constructor(private http:HttpClient) { }
 
-  createSingleInvitation(data:any, file:any): Observable<CreateInvResp>{
+  createSingleInvitation(data:any, file:any, fontFileArr: File[]): Observable<CreateInvResp>{
     const formData = new FormData();
     formData.append("invitationDTO", new Blob([JSON.stringify(data)], {
       type: "application/json"
     }));
     formData.append("file", file);
+    formData.append('fontFileArray', new Blob(fontFileArr));
 
     return this.http.post<CreateInvResp>(environment.localUrl + "createSingleInvitation", formData);
   }
